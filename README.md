@@ -24,3 +24,12 @@ python pacman.py -p MinimaxAgent -l minimaxClassic -a depth=4
 
 python autograder.py -q q2 --no-graphics
 ```
+
+## Problem #3
+
+```bash
+python pacman.py -p AlphaBetaAgent -a depth=3 -l smallClassic
+
+python autograder.py -q q3 --no-graphics
+```
+
