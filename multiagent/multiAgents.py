@@ -196,11 +196,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
         actions = gameState.getLegalActions(agentIndex)
         minVal = 9999
         for action in actions:
-<<<<<<< HEAD
-            successor = gameState.generateSuccessor(agentIndex, action)
-=======
             successor = gameState.getNextState(agentIndex, action)
->>>>>>> 852d6cf8ed91b37d28091453a654f434284d48ea
             minVal = min(minVal, self.getValue(successor, depth, (agentIndex + 1) % gameState.getNumAgents()))
         return minVal
 
@@ -210,11 +206,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
         maxVal = -9999
 
         for action in actions:
-<<<<<<< HEAD
-            successor = gameState.generateSuccessor(agentIndex, action)
-=======
             successor = gameState.getNextState(agentIndex, action)
->>>>>>> 852d6cf8ed91b37d28091453a654f434284d48ea
             maxVal = max(maxVal, self.getValue(successor, depth, (agentIndex + 1) % gameState.getNumAgents()))
 
         return maxVal
