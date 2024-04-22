@@ -164,7 +164,52 @@ class MinimaxAgent(MultiAgentSearchAgent):
         Returns whether or not the game state is a losing state
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        actions = gameState.getLegalActions(0)
+
+        actionValues = [self.getValue(gameState.generateSuccessor(0, action), self.depth, 1) for action in actions]
+
+        maxIndex = actionValues.index(max(actionValues))
+
+        return actions[maxIndex]
+
+    def getValue(self, gameState, depth, agentIndex):
+        if depth == 0:  # if terminal state
+            returnVal = self.evaluationFunction(gameState)
+            return returnVal
+
+        if gameState.isWin():
+            returnVal = self.evaluationFunction(gameState)
+            return returnVal
+
+        if gameState.isLose():
+            returnVal = self.evaluationFunction(gameState)
+            return returnVal
+
+        if (gameState.getNumAgents() == agentIndex + 1) and (depth > 0):  # last agent move for the current depth
+            depth -= 1
+        if agentIndex >= 1:  # min agent (ghost)
+            return self.minValue(gameState, depth, agentIndex)
+        if agentIndex == 0:  # max agent (pacman)
+            return self.maxValue(gameState, depth, agentIndex)
+
+    def minValue(self, gameState, depth, agentIndex):
+        actions = gameState.getLegalActions(agentIndex)
+        minVal = 9999
+        for action in actions:
+            successor = gameState.generateSuccessor(agentIndex, action)
+            minVal = min(minVal, self.getValue(successor, depth, (agentIndex + 1) % gameState.getNumAgents()))
+        return minVal
+
+    def maxValue(self, gameState, depth, agentIndex):
+
+        actions = gameState.getLegalActions(agentIndex)
+        maxVal = -9999
+
+        for action in actions:
+            successor = gameState.generateSuccessor(agentIndex, action)
+            maxVal = max(maxVal, self.getValue(successor, depth, (agentIndex + 1) % gameState.getNumAgents()))
+
+        return maxVal
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
