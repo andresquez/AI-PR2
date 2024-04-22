@@ -17,6 +17,7 @@ from game import Directions
 import random, util
 
 from game import Agent
+from pacman import GameState
 
 class ReflexAgent(Agent):
     """
@@ -67,16 +68,44 @@ class ReflexAgent(Agent):
         to create a masterful evaluation function.
         """
         # Useful information you can extract from a GameState (pacman.py)
-        childGameState = currentGameState.getPacmanNextState(action)
-        newPos = childGameState.getPacmanPosition()
-        newFood = childGameState.getFood()
-        newGhostStates = childGameState.getGhostStates()
+        successorGameState = currentGameState.getPacmanNextState(action)
+        newPos = successorGameState.getPacmanPosition()
+        newFood = successorGameState.getFood()
+        newGhostStates = successorGameState.getGhostStates()
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
         "*** YOUR CODE HERE ***"
-        return childGameState.getScore()
+        # 1
+        foodEval = 0
+
+        for food in newFood.asList():
+            foodEval += manhattanDistance(food, newPos)
+
+        if len(newFood.asList()) != 0:
+            foodEval /= len(newFood.asList())  # get the avg
+
+        # 2
+        ghostEval = 0
+
+        for ghostState in newGhostStates:
+            ghostEval += manhattanDistance(ghostState.getPosition(), newPos)
+
+        if len(newGhostStates) != 0:
+            ghostEval /= len(newGhostStates)  # avg
+
+        # 3
+        scaredEval = 0
+
+        for scaredTime in newScaredTimes:
+            scaredEval += scaredTime
+
+        if len(newScaredTimes) != 0:
+            scaredEval /= len(newScaredTimes)  # avg
+
+        return (scaredEval * 3) + (ghostEval * 1.1) - (foodEval * 1.25) + (successorGameState.getScore() * 4)
 
 def scoreEvaluationFunction(currentGameState):
+    
     """
     This default evaluation function just returns the score of the state.
     The score is the same one displayed in the Pacman GUI.
