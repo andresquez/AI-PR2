@@ -166,7 +166,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
         "*** YOUR CODE HERE ***"
         actions = gameState.getLegalActions(0)
 
-        actionValues = [self.getValue(gameState.generateSuccessor(0, action), self.depth, 1) for action in actions]
+        actionValues = [self.getValue(gameState.getNextState(0, action), self.depth, 1) for action in actions]
 
         maxIndex = actionValues.index(max(actionValues))
 
@@ -196,7 +196,11 @@ class MinimaxAgent(MultiAgentSearchAgent):
         actions = gameState.getLegalActions(agentIndex)
         minVal = 9999
         for action in actions:
+<<<<<<< HEAD
             successor = gameState.generateSuccessor(agentIndex, action)
+=======
+            successor = gameState.getNextState(agentIndex, action)
+>>>>>>> 852d6cf8ed91b37d28091453a654f434284d48ea
             minVal = min(minVal, self.getValue(successor, depth, (agentIndex + 1) % gameState.getNumAgents()))
         return minVal
 
@@ -206,7 +210,11 @@ class MinimaxAgent(MultiAgentSearchAgent):
         maxVal = -9999
 
         for action in actions:
+<<<<<<< HEAD
             successor = gameState.generateSuccessor(agentIndex, action)
+=======
+            successor = gameState.getNextState(agentIndex, action)
+>>>>>>> 852d6cf8ed91b37d28091453a654f434284d48ea
             maxVal = max(maxVal, self.getValue(successor, depth, (agentIndex + 1) % gameState.getNumAgents()))
 
         return maxVal
@@ -221,8 +229,27 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        actions = gameState.getLegalActions(0)
 
+        alpha = -9999
+        beta = 9999
+
+        maxVal = alpha
+
+        actionToReturn = actions[0]
+
+        for action in actions:
+            successor = gameState.generateSuccessor(0, action)
+            maxVal = max(maxVal, self.getValue(successor, self.depth, 1, alpha, beta))
+
+            if maxVal > beta:
+                return action
+
+            if maxVal > alpha:
+                actionToReturn = action
+                alpha = maxVal
+
+        return actionToReturn
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
       Your expectimax agent (question 4)
