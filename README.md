@@ -2,7 +2,7 @@
 Berkeley Project #2 - Artificial Inteligence
 
 
-# Problem #1
+## Problem #1
 
 ```bash
 python pacman.py -p ReflexAgent -l testClassic
@@ -15,7 +15,7 @@ python autograder.py -q q1 --no-graphics
 
 ```
 
-# Problem #2
+## Problem #2
 
 ```bash
 python pacman.py -p MinimaxAgent -l trappedClassic -a depth=3
