@@ -304,7 +304,53 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         legal moves.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        actions = gameState.getLegalActions(0)
+
+        actionValues = [self.getValue(gameState.getNextState(0, action), self.depth, 1) for action in actions]
+
+        maxIndex = actionValues.index(max(actionValues))
+
+        return actions[maxIndex]
+    
+    def getValue(self, gameState, depth, agentIndex):
+        if depth == 0:  # if terminal state
+            returnVal = self.evaluationFunction(gameState)
+            return returnVal
+        if gameState.isWin():
+            returnVal = self.evaluationFunction(gameState)
+            return returnVal
+        if gameState.isLose():
+            returnVal = self.evaluationFunction(gameState)
+            return returnVal
+        if (gameState.getNumAgents() == agentIndex + 1) and (depth > 0):  # last agent move for the current depth
+            depth -= 1
+        if agentIndex >= 1:  # min agent (ghost)
+            return self.expectedValue(gameState, depth, agentIndex)
+        if agentIndex == 0:  # max agent (pacman)
+            return self.maxValue(gameState, depth, agentIndex)
+
+    def maxValue(self, gameState, depth, agentIndex):
+        actions = gameState.getLegalActions(agentIndex)
+        maxVal = -9999
+        for action in actions:
+            successor = gameState.getNextState(agentIndex, action)
+            maxVal = max(maxVal, self.getValue(successor, depth, (agentIndex + 1) % gameState.getNumAgents()))
+        return maxVal
+
+    def expectedValue(self, gameState, depth, agentIndex):
+
+        actions = gameState.getLegalActions(agentIndex)
+        valSum = 0
+
+        for action in actions:
+            successor = gameState.getNextState(agentIndex, action)
+            val = self.getValue(successor, depth, (agentIndex + 1) % gameState.getNumAgents())
+            valSum += val
+
+        if len(actions) > 1:
+            valSum /= len(actions)
+
+        return valSum
 
 def betterEvaluationFunction(currentGameState):
     """
