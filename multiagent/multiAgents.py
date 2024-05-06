@@ -75,7 +75,7 @@ class ReflexAgent(Agent):
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
         "*** YOUR CODE HERE ***"
-        # 1
+        #  distancia promedio a los alimentos restantes
         foodEval = 0
 
         for food in newFood.asList():
@@ -84,7 +84,7 @@ class ReflexAgent(Agent):
         if len(newFood.asList()) != 0:
             foodEval /= len(newFood.asList())  # get the avg
 
-        # 2
+        # distancia promedio a los fantasmas
         ghostEval = 0
 
         for ghostState in newGhostStates:
@@ -93,7 +93,7 @@ class ReflexAgent(Agent):
         if len(newGhostStates) != 0:
             ghostEval /= len(newGhostStates)  # avg
 
-        # 3
+        # tiempo promedio restante para que los fantasmas dejen de estar asustados
         scaredEval = 0
 
         for scaredTime in newScaredTimes:
@@ -102,7 +102,7 @@ class ReflexAgent(Agent):
         if len(newScaredTimes) != 0:
             scaredEval /= len(newScaredTimes)  # avg
 
-        return (scaredEval * 3) + (ghostEval * 1.1) - (foodEval * 1.25) + (successorGameState.getScore() * 4)
+        return (scaredEval * 3) + (ghostEval) - (foodEval * 1.25) + (successorGameState.getScore() * 4)
 
 def scoreEvaluationFunction(currentGameState):
     
