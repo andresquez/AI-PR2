@@ -294,65 +294,95 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
-      Your expectimax agent (question 4)
+    Agente de Expectimax para el juego Pac-Man. El agente Expectimax modela a los oponentes (fantasmas)
+    como si hicieran elecciones aleatorias entre sus movimientos legales, en lugar de jugar óptimamente.
     """
 
     def getAction(self, gameState):
         """
-        Returns the expectimax action using self.depth and self.evaluationFunction
+        Devuelve la acción de Expectimax usando la profundidad de búsqueda definida y la función de evaluación.
 
-        All ghosts should be modeled as choosing uniformly at random from their
-        legal moves.
+        :param gameState: El estado actual del juego.
+        :return: La mejor acción según el algoritmo Expectimax.
         """
-        "*** YOUR CODE HERE ***"
+        # Obtener todas las acciones legales para Pac-Man (agente 0).
         actions = gameState.getLegalActions(0)
 
+        # Calcular el valor de cada acción posible.
         actionValues = [self.getValue(gameState.getNextState(0, action), self.depth, 1) for action in actions]
 
+        # Seleccionar el índice de la acción con el valor máximo.
         maxIndex = actionValues.index(max(actionValues))
 
+        # Devolver la acción con el máximo valor.
         return actions[maxIndex]
     
     def getValue(self, gameState, depth, agentIndex):
-        if depth == 0:  # if terminal state
-            returnVal = self.evaluationFunction(gameState)
-            return returnVal
-        if gameState.isWin():
-            returnVal = self.evaluationFunction(gameState)
-            return returnVal
-        if gameState.isLose():
-            returnVal = self.evaluationFunction(gameState)
-            return returnVal
-        if (gameState.getNumAgents() == agentIndex + 1) and (depth > 0):  # last agent move for the current depth
+        """
+        Calcula el valor del estado dado, considerando la profundidad y el agente actual.
+
+        :param gameState: Estado actual del juego.
+        :param depth: Profundidad actual de la búsqueda.
+        :param agentIndex: Índice del agente actual.
+        :return: Valor calculado para el estado dado.
+        """
+        # Verificar si el estado es terminal por profundidad, victoria o derrota.
+        if depth == 0 or gameState.isWin() or gameState.isLose():
+            return self.evaluationFunction(gameState)
+
+        # Ajustar la profundidad si es el último agente.
+        if gameState.getNumAgents() == agentIndex + 1:
             depth -= 1
-        if agentIndex >= 1:  # min agent (ghost)
+
+        # Evaluar basándose en si el agente es Pac-Man o un fantasma.
+        if agentIndex >= 1:
+            # Valor esperado para los fantasmas.
             return self.expectedValue(gameState, depth, agentIndex)
-        if agentIndex == 0:  # max agent (pacman)
+        else:
+            # Valor máximo para Pac-Man.
             return self.maxValue(gameState, depth, agentIndex)
 
     def maxValue(self, gameState, depth, agentIndex):
+        """
+        Calcula el valor máximo para las acciones de Pac-Man.
+
+        :param gameState: Estado del juego.
+        :param depth: Profundidad de búsqueda.
+        :param agentIndex: Índice del agente.
+        :return: El valor máximo.
+        """
+        # Obtener las acciones legales para Pac-Man.
         actions = gameState.getLegalActions(agentIndex)
-        maxVal = -9999
+        maxVal = float('-inf')  # Iniciar con un valor muy bajo.
+
+        # Evaluar el valor máximo entre las acciones posibles.
         for action in actions:
             successor = gameState.getNextState(agentIndex, action)
             maxVal = max(maxVal, self.getValue(successor, depth, (agentIndex + 1) % gameState.getNumAgents()))
         return maxVal
 
     def expectedValue(self, gameState, depth, agentIndex):
+        """
+        Calcula el valor esperado para las acciones de un fantasma.
 
+        :param gameState: Estado del juego.
+        :param depth: Profundidad de búsqueda.
+        :param agentIndex: Índice del fantasma.
+        :return: Valor esperado.
+        """
+        # Obtener acciones legales para el fantasma.
         actions = gameState.getLegalActions(agentIndex)
-        valSum = 0
+        valSum = 0  # Suma de valores para calcular la media.
 
+        # Sumar los valores de todas las acciones posibles.
         for action in actions:
             successor = gameState.getNextState(agentIndex, action)
             val = self.getValue(successor, depth, (agentIndex + 1) % gameState.getNumAgents())
             valSum += val
 
-        if len(actions) > 1:
-            valSum /= len(actions)
-
-        return valSum
-
+        # Calcular el promedio si hay acciones disponibles.
+        return valSum / len(actions) if actions else 0
+    
 def betterEvaluationFunction(currentGameState):
     """
     Your extreme ghost-hunting, pellet-nabbing, food-gobbling, unstoppable
